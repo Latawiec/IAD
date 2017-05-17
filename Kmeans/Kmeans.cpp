@@ -5,7 +5,18 @@
 Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath)
 	: numberOfCentroids(centroidsNumber)
 {
+	std::ifstream file(dataPath);
+	assert(file.is_open());
 
+	while (!file.eof()) {
+		points_.push_back(Point(2));
+		file >> points_.back()[0];
+		file >> points_.back()[1];
+	}
+
+	for (int i = 0; i<centroidsNumber; ++i) {
+		groups_.push_back(Group<double>(Neuron<double>({0, 0})));
+	}
 }
 
 
@@ -38,6 +49,7 @@ void Kmeans::calculateDistances()
 
 bool Kmeans::regroup()
 {
+	bool result = false; // - this is going to tell us wether anything changed in the positions from the last time.
 	//Clear current points in each group
 	for (Group<double>& g : groups_) {
 		g.clearPoints();
@@ -48,6 +60,9 @@ bool Kmeans::regroup()
 		groups_[std::distance(p.begin(), std::max_element(p.begin(), p.end()))].add(&p);
 	}
 
-	//*******
-	return false;
+	//Change centroids position with new points
+	for (Group<double>& g : groups_) {
+		result = result && g.updateParentWeights();
+	}
+	return result;
 }

@@ -5,11 +5,13 @@
 #include <memory>
 #include <algorithm>
 #include <iterator>
+#include <fstream>
+#include <assert.h>
 
 class Kmeans
 {
 public:
-	typedef Group<double>::Point Point;
+	typedef std::vector<double> Point;
 
 	enum class Init : unsigned char {
 		Forgy,
@@ -31,8 +33,8 @@ public:
 	}
 private:
 	std::vector<Group<double>> groups_;
-	const std::vector<Point> points_;
-	std::vector<std::vector<double>> distances_; //distances x centroids
+	std::vector<Point> points_;
+	std::vector<Point> distances_; //distances x centroids
 
 	int numberOfPoints;
 	const int numberOfCentroids;

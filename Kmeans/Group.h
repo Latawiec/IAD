@@ -23,7 +23,7 @@ public:
 	bool updateParentWeights() {	//Returns false if parent hasn't moved at all.
 		int size = parent_.getSize();
 		std::vector<T> result(size);
-		for (const Point* point : Points) {
+		for (const Point* point : points_) {
 			for (int i = 0; i < size; i++) {
 				result[i] += (*point)[i];
 			}
@@ -34,7 +34,7 @@ public:
 		}
 		
 		for (int i = 0; i < size; i++) {
-			if (result[i] != parent_[i]) {
+			if (result[i] != parent_.getWeights()[i]) {
 				parent_.setWeights(std::move(result));
 				return true;
 			}
@@ -43,7 +43,7 @@ public:
 	}
 
 private:
-	const Neuron<T>& parent_;
+	Neuron<T> parent_;
 	std::deque<const Point*> points_;
 };
 

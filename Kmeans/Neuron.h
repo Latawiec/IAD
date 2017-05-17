@@ -12,7 +12,7 @@ public:
 	virtual	~Neuron() {};
 
 	constexpr const std::vector<T>& getWeights()const { return weights_; };
-	void setWeights(const std::vector<T> &values) { weights_ = std::copy(values) };
+	void setWeights(const std::vector<T> &values) { weights_ = values; };
 	std::string printWeights()const {
 		std::ostringstream str;
 		for (const T& val : weights_) {
@@ -20,7 +20,7 @@ public:
 		}
 		return str.str();
 	}
-	int getSize() { return weights_.size() };
+	int getSize() { return weights_.size(); };
 
 private:
 	std::vector<T> weights_;
