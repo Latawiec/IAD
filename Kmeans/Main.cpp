@@ -5,10 +5,18 @@
 #include "Kmeans.h"
 
 void main() {
-	//Neuron<int> a({ 5, 3, 5 });
-	//Group<int> group(a);
 
-	Kmeans k(Kmeans::Init::Forgy, 3, "C:\\Users\\Latawiec\\Desktop\\a.txt");
+	Kmeans k(Kmeans::Init::Forgy, 2, "C:\\Users\\Latawiec\\Desktop\\B.txt");
+
+	while (k.update());
+
+	std::ofstream file("C:\\Users\\Latawiec\\Desktop\\Centroids.txt", std::ios::trunc);
+	file << k.printCentroids();
+	file.close();
+
+	file.open("C:\\Users\\Latawiec\\Desktop\\Points.txt", std::ios::trunc);
+	file << k.printGroupedPoints();
+	file.close();
 
 	std::cout << "Hello world!" << std::endl;
 	std::getchar();
