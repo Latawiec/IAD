@@ -13,6 +13,7 @@ public:
 
 	constexpr const std::vector<T>& getWeights()const { return weights_; }
 	void setWeights(const std::vector<T> &values) { weights_ = values; }
+	void setWeights(const std::vector<T> &&values) { weights_ = std::move(values); }
 	std::string printWeights()const {
 		std::ostringstream str;
 		for (const T& val : weights_) {

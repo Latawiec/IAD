@@ -1,6 +1,7 @@
 #pragma once
 #include "Neuron.h"
 #include <deque>
+#include <assert.h>
 
 template<typename T>
 class Group
@@ -44,12 +45,13 @@ public:
 		}
 
 		for (T& val : result) {
+			assert(pointsNumber != 0);
 			val /= pointsNumber;
 		}
 		
 		for (int i = 0; i < dim; i++) {
-			if ( result[i] != parent_.getWeights()[i]) {
-				parent_.setWeights(result);
+			if ((result[i] - parent_.getWeights()[i]) > 0.01f) {
+				parent_.setWeights(std::move(result));
 				return true;
 			}
 		}

@@ -8,11 +8,12 @@
 #include <fstream>
 #include <assert.h>
 #include <random>
+#include <thread>
 
 class Kmeans
 {
 public:
-	typedef std::vector<float> Point;
+	typedef std::vector<double> Point;
 
 	enum class Init : unsigned char {
 		Forgy,
@@ -25,8 +26,8 @@ public:
 	std::string printGroupedPoints();
 	std::string printCentroids();
 
-	static float euclideanDistance(const Point a, const Point b) {
-		float result = 0;
+	static double euclideanDistance(const Point& a, const Point& b) {
+		double result = 0;
 		int size = a.size();
 		for (int i = 0; i < size; i++) {
 			result += pow(a[i] - b[i], 2);
@@ -35,7 +36,7 @@ public:
 		return result;
 	}
 private:
-	std::vector<Group<float>> groups_;
+	std::vector<Group<double>> groups_;
 	std::vector<Point> points_;
 	std::vector<Point> distances_; //distances x centroids
 
@@ -43,4 +44,5 @@ private:
 	const int numberOfCentroids;
 	void calculateDistances();
 	bool regroup();
+	int iterations = 0;
 };
