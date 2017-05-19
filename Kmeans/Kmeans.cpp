@@ -54,7 +54,7 @@ std::string Kmeans::printCentroids()
 	for (int i = 0; i < numberOfCentroids; i++) {
 		str << '#' << i << '\n';
 		str << groups_[i].printParent();
-		str << '\n';
+		str << '\n' << '\n' << '\n';
 	}
 	return str.str();
 }
