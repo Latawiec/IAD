@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{8F9DA63A-3807-45AC-A460-8A1B40988AC8}</ProjectGuid>
-    <RootNamespace>Kmeans</RootNamespace>
+    <ProjectGuid>{9F8CC756-74DF-4170-8CB8-944992D0813E}</ProjectGuid>
+    <RootNamespace>NeuralGas</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -112,13 +112,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Kmeans.cpp" />
-    <ClCompile Include="Kmeans_Group.cpp" />
+    <ClCompile Include="Gas_Group.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Kmeans.h" />
-    <ClInclude Include="Kmeans_Group.h" />
+    <ClInclude Include="Gas_Group.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BasicTypes\BasicTypes.vcxproj">

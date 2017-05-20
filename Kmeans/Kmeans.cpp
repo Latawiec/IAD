@@ -19,7 +19,7 @@ Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath)
 	std::uniform_int_distribution<int> distribution(0, numberOfPoints-1);
 
 	for (int i = 0; i<centroidsNumber; ++i) {
-		groups_.push_back(Group<double>(Neuron<double>(points_[distribution(generator)])));
+		groups_.push_back(Kmeans_Group(Neuron<double>(points_[distribution(generator)])));
 	}
 
 	distances_ = std::vector<std::vector<double>>(numberOfPoints, std::vector<double>(numberOfCentroids));
@@ -62,7 +62,6 @@ std::string Kmeans::printCentroids()
 void Kmeans::calculateDistances()
 {
 	//Get current positions
-	//std::vector<const Point*> centroidsPositions(numberOfCentroids);
 	std::unique_ptr<const Point*[]> centroidsPositions(new const Point*[numberOfCentroids]);
 
 	for (int i = 0; i < numberOfCentroids; i++) {
@@ -76,7 +75,8 @@ void Kmeans::calculateDistances()
 		}
 	}*/
 
-	//Calculate distances... faster
+	//Calculate distances... faster.
+	//It basically does the same as code commented above. But separates calculations into N-1 threads, where N is the number of threads available. (Leave one for system and stuff...)
 	const int concurrency = std::thread::hardware_concurrency() - 1;
 	std::unique_ptr<std::thread[]> threads(new std::thread[concurrency]);
 	{
@@ -102,7 +102,7 @@ void Kmeans::calculateDistances()
 	}
 
 	for (int i = 0; i < concurrency; i++) {
-		threads[i].join();
+		threads[i].join();	//The one last thread that is not doing anything useful is now waiting for the others to complete calculations. #smart
 	}
 }
 
@@ -110,7 +110,7 @@ bool Kmeans::regroup()
 {
 	bool result = false; // - this is going to tell us wether anything changed in the positions from the last time.
 	//Clear current points in each group
-	for (Group<double>& g : groups_) {
+	for (Kmeans_Group& g : groups_) {
 		g.clearPoints();
 	}
 
@@ -121,7 +121,7 @@ bool Kmeans::regroup()
 	}
 
 	//Change centroids position with new points
-	for (Group<double>& g : groups_) {
+	for (Kmeans_Group& g : groups_) {
 		result = result || g.updateParentWeights();
 	}
 	return result;

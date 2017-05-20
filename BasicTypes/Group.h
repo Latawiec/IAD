@@ -32,33 +32,7 @@ public:
 		return str.str();
 	}
 
-	bool updateParentWeights() {	//Returns false if parent hasn't moved at all.
-		int dim = parent_.getSize();
-		int pointsNumber = points_.size();
-
-		std::vector<T> result(dim);
-
-		for (const Point* point : points_) {
-			for (int i = 0; i < dim; i++) {
-				result[i] += (*point)[i];
-			}
-		}
-
-		for (T& val : result) {
-			assert(pointsNumber != 0);
-			val /= pointsNumber;
-		}
-		
-		for (int i = 0; i < dim; i++) {
-			if ((result[i] - parent_.getWeights()[i]) > 0.01f) {
-				parent_.setWeights(std::move(result));
-				return true;
-			}
-		}
-		return false;
-	}
-
-private:
+protected:
 	Neuron<T> parent_;
 	std::deque<const Point*> points_;
 };

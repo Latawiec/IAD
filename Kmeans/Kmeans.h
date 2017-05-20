@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-#include "Group.h"
+#include "Kmeans_Group.h"
 #include <math.h>
 #include <memory>
 #include <algorithm>
@@ -36,7 +36,7 @@ public:
 		return result;
 	}
 private:
-	std::vector<Group<double>> groups_;
+	std::vector<Kmeans_Group> groups_;
 	std::vector<Point> points_;
 	std::vector<Point> distances_; //distances x centroids
 
