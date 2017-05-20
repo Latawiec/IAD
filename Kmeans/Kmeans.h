@@ -1,6 +1,7 @@
 #pragma once
 #include <type_traits>
 #include "Kmeans_Group.h"
+#include "MyMath.h"
 #include <math.h>
 #include <memory>
 #include <algorithm>
@@ -26,15 +27,6 @@ public:
 	std::string printGroupedPoints();
 	std::string printCentroids();
 
-	static double euclideanDistance(const Point& a, const Point& b) {
-		double result = 0;
-		int size = a.size();
-		for (int i = 0; i < size; i++) {
-			result += pow(a[i] - b[i], 2);
-		}
-		result = sqrt(result);
-		return result;
-	}
 private:
 	std::vector<Kmeans_Group> groups_;
 	std::vector<Point> points_;

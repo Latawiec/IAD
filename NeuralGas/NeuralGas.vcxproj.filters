@@ -18,12 +18,18 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Gas_Group.cpp">
+    <ClCompile Include="NeuralGas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GasNeuron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gas_Group.h">
+    <ClInclude Include="NeuralGas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GasNeuron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

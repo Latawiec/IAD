@@ -112,11 +112,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Gas_Group.cpp" />
+    <ClCompile Include="GasNeuron.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NeuralGas.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gas_Group.h" />
+    <ClInclude Include="GasNeuron.h" />
+    <ClInclude Include="NeuralGas.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BasicTypes\BasicTypes.vcxproj">
