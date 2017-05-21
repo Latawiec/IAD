@@ -52,14 +52,31 @@ bool NeuralGas::update()
 
 	//We need to start cooking... Update neurons weights!
 	{
+		std::once_flag winnerFound;
 		std::vector<double> temp;
+		GasNeuron* chosenNeuron = nullptr;
+		int neighboursIterator = 0;
 		int dim = selected->size();
 		for (int i = 0; i < numberOfNeurons_; i++) {
-			temp = std::vector<double>(std::get<0>(distances_[i])->getWeights());
-			for (int j = 0; j < dim; j++) {
-				temp[j] += teachingFactor*calculateDistanceFactor(i)*( (*selected)[j] - temp[j] );
+			chosenNeuron = std::get<0>(distances_[i]);
+			if (chosenNeuron->getPotential() < minPotential_) {
+				chosenNeuron->addPotential(1.0 / numberOfNeurons_);
+				continue;
 			}
-			std::get<0>(distances_[i])->setWeights(std::move(temp));
+			else {
+				temp = std::vector<double>(chosenNeuron->getWeights());
+				for (int j = 0; j < dim; j++) {
+					temp[j] += teachingFactor*calculateDistanceFactor(neighboursIterator)*((*selected)[j] - temp[j]);
+				}
+				chosenNeuron->setWeights(std::move(temp));
+
+
+				std::call_once(winnerFound, std::bind(&GasNeuron::addPotential, chosenNeuron, -minPotential_));
+
+
+				neighboursIterator++;
+			}
+
 		}
 	}
 

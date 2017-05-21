@@ -6,6 +6,7 @@
 #include "GasNeuron.h"
 #include "MyMath.h"
 #include <algorithm>
+#include <mutex>
 
 class NeuralGas
 {
@@ -18,7 +19,6 @@ public:
 	bool update();
 	double calculateDistanceFactor(int k);
 	std::string printNeurons();
-
 	int getIterations() { return iterations_; }
 
 private:
@@ -32,6 +32,7 @@ private:
 
 	const double teachingFactor = 1;
 	const double neighbourhoodRange = 0.5;
+	const double minPotential_ = 0.95;
 	const int numberOfNeurons_;
 	int numberOfPoints_;
 
