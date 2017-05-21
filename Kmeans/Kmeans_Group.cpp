@@ -2,8 +2,9 @@
 
 bool Kmeans_Group::updateParentWeights()
 {	
-	int dim = parent_.getSize();
 	int pointsNumber = points_.size();
+	if (points_.size() == 0) return false;
+	int dim = parent_.getSize();
 
 	std::vector<double> result(dim);
 
@@ -14,7 +15,7 @@ bool Kmeans_Group::updateParentWeights()
 	}
 
 	for (double& val : result) {
-		assert(pointsNumber != 0);
+		//assert(pointsNumber != 0);
 		val /= pointsNumber;
 	}
 

@@ -69,11 +69,7 @@ bool NeuralGas::update()
 					temp[j] += teachingFactor*calculateDistanceFactor(neighboursIterator)*((*selected)[j] - temp[j]);
 				}
 				chosenNeuron->setWeights(std::move(temp));
-
-
 				std::call_once(winnerFound, std::bind(&GasNeuron::addPotential, chosenNeuron, -minPotential_));
-
-
 				neighboursIterator++;
 			}
 

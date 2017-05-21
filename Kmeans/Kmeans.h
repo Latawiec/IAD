@@ -26,6 +26,7 @@ public:
 	bool update();
 	std::string printGroupedPoints();
 	std::string printCentroids();
+	int getIterations() { return iterations_; }
 
 private:
 	std::vector<Kmeans_Group> groups_;
@@ -36,5 +37,5 @@ private:
 	const int numberOfCentroids;
 	void calculateDistances();
 	bool regroup();
-	int iterations = 0;
+	int iterations_ = 0;
 };

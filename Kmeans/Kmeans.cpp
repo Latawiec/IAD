@@ -14,14 +14,43 @@ Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath)
 	file.close();
 
 	numberOfPoints = points_.size();
-
 	std::random_device generator;
 	std::uniform_int_distribution<int> distribution(0, numberOfPoints-1);
 
-	for (int i = 0; i<centroidsNumber; ++i) {
-		groups_.push_back(Kmeans_Group(Neuron<double>(points_[distribution(generator)])));
-	}
+	switch (init_type) {
+	case Init::Forgy:
+		for (int i = 0; i<centroidsNumber; ++i) {
+			groups_.push_back(Kmeans_Group(Neuron<double>(points_[distribution(generator)])));
+		}
+		break;
 
+	case Init::RP:
+		std::vector<std::tuple<Point, int>> groups = std::vector<std::tuple<Point, int>>(numberOfCentroids, std::tuple<Point, int>(Point(2, 0), 0));
+		std::uniform_int_distribution<int> groupsDistribution(0, numberOfCentroids - 1);
+
+		int chosenGroup = 0;
+		Point* temp = nullptr;
+
+		for (const auto& point : points_){
+			chosenGroup = groupsDistribution(generator);
+			temp = &std::get<0>(groups[chosenGroup]);
+			(*temp)[0] += point[0];
+			(*temp)[1] += point[1];
+			std::get<1>(groups[chosenGroup])++;
+		}
+
+		int size = 0;
+		for (auto& group : groups) {
+			temp = &std::get<0>(group);
+			size = std::get<1>(group);
+
+			(*temp)[0] /= size;
+			(*temp)[1] /= size;
+
+			groups_.push_back(Kmeans_Group(Neuron<double>(std::move(*temp))));
+		}
+		break;
+	}
 	distances_ = std::vector<std::vector<double>>(numberOfPoints, std::vector<double>(numberOfCentroids));
 }
 
@@ -32,7 +61,7 @@ Kmeans::~Kmeans()
 
 bool Kmeans::update()
 {
-	iterations++;
+	iterations_++;
 	calculateDistances();
 	return regroup();
 }

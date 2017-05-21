@@ -6,7 +6,7 @@
 
 void main() {
 
-	Kmeans k(Kmeans::Init::Forgy, 20, "C:\\Users\\Latawiec\\Desktop\\B.txt");
+	Kmeans k(Kmeans::Init::RP, 30, "C:\\Users\\Latawiec\\Desktop\\B.txt");
 
 	while (k.update());
 
