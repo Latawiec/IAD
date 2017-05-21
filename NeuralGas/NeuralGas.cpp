@@ -6,7 +6,7 @@ NeuralGas::NeuralGas(int neuronsNumber, std::string dataPath, double gridDistanc
 	: numberOfNeurons_(neuronsNumber)
 {
 	std::ifstream file(dataPath);
-	assert(file.is_open());
+	assert(file.is_open(), "File did not open properly. Aborting!");
 
 	while (!file.eof()) {
 		points_.push_back(Point(2));

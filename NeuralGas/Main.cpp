@@ -3,8 +3,9 @@
 
 void main()
 {
-	NeuralGas gas(36, "C:\\Users\\Latawiec\\Desktop\\B.txt");
-	while(gas.update() && gas.getIterations() < 150000);
+	NeuralGas gas(100, "C:\\Users\\Latawiec\\Desktop\\B.txt", 0.1);
+
+	while(gas.update() && gas.getIterations() < 15000);
 
 	std::cout << gas.getIterations();
 
