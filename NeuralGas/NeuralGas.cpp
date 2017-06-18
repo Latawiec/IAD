@@ -2,7 +2,7 @@
 
 
 
-NeuralGas::NeuralGas(int neuronsNumber, std::string dataPath, double gridDistance)
+NeuralGas::NeuralGas(int neuronsNumber, std::string dataPath, double gridDistance, int dimension)
 	: numberOfNeurons_(neuronsNumber)
 {
 	std::ifstream file(dataPath);
@@ -19,7 +19,7 @@ NeuralGas::NeuralGas(int neuronsNumber, std::string dataPath, double gridDistanc
 	distances_ = std::vector<std::tuple<GasNeuron*, double>>(neuronsNumber, std::tuple<GasNeuron*, double>());
 	distribution_ = std::uniform_int_distribution<int>(0, numberOfPoints_ - 1);
 
-	int width = std::sqrt(numberOfNeurons_);
+	int width = std::pow(numberOfNeurons_, 1.0 / dimension);
 
 	for (int i = 0; i < neuronsNumber; i++) {
 		neurons_.push_back(GasNeuron({gridDistance*(i%width), gridDistance*(i/width)}));
@@ -94,4 +94,16 @@ std::string NeuralGas::printNeurons()
 		str << '\n' << '\n' << '\n';
 	}
 	return str.str();
+}
+
+std::vector<std::vector<double>> NeuralGas::getNeuronsPositions()
+{
+	std::vector<std::vector<double>> result(neurons_.size(), std::vector<double>());
+	std::transform(neurons_.cbegin(), neurons_.cend(), result.begin(), neurons_.cbegin(), [](const GasNeuron& neuron) { return neuron.getWeights(); });
+	return result;
+}
+
+std::vector<std::vector<double>>& NeuralGas::getDataPoints()
+{
+	return points_;
 }

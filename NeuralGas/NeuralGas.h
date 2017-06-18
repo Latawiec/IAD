@@ -13,13 +13,15 @@ class NeuralGas
 public:
 	typedef std::vector<double> Point;
 
-	NeuralGas(int neuronsNumber, std::string dataPath, double gridDistance = 1);
+	NeuralGas(int neuronsNumber, std::string dataPath, double gridDistance = 1, int dimension = 2);
 	~NeuralGas();
 
 	bool update();
 	double calculateDistanceFactor(int k);
 	std::string printNeurons();
 	int getIterations() { return iterations_; }
+	std::vector<Point> getNeuronsPositions();
+	std::vector<Point>& getDataPoints();
 
 private:
 	std::random_device generator_;
