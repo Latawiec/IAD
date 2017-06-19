@@ -7,24 +7,11 @@ class RadialNeuron : public RBFNeuronTemplate
 {
 private:
 	double beta = 0.5;
-	double center;
+	double center = 1;
+
 
 public:
-	RadialNeuron(double center)
-		: RBFNeuronTemplate(
-	[&](double value)
-	{ 
-		using std::pow;
-		using std::exp;
-		return exp( -pow(beta*(value-center), 2) );
-	},
-
-	[&](double value)
-	{ 
-		using std::pow;
-		using std::exp;
-		return -2.0*beta* pow(value-center, 2) * exp( -( pow(beta, 2) * pow(center-value, 2)));
-	}), center(center)
+	RadialNeuron(double cent) : RBFNeuronTemplate(), center(cent)
 	{
 		lastInputValues_.resize(1);
 	};
@@ -44,9 +31,24 @@ public:
 		error_ = derivative(lastExcitementValue_) * errors[0];
 	}
 
-	void updateWeights(double learningFactor)override
+	void updateWeights(double learningFactor, double momentum)override
 	{
-		beta += learningFactor * error_ * lastInputValues_[0];
+		beta += learningFactor * error_ *lastInputValues_[0] + previousValues[0]*momentum;
+		previousValues[0] = learningFactor * error_ *lastInputValues_[0];
+	}
+
+	double function(double value)override
+	{
+		using std::pow;
+		using std::exp;
+		return exp(-pow(beta*(value - center), 2));
+	}
+
+	double derivative(double value)override
+	{
+		using std::pow;
+		using std::exp;
+		return -2.0*beta*pow(value - center, 2) * exp(-(pow(beta*(center - value), 2)));
 	}
 };
 

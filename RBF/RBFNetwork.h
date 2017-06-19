@@ -10,9 +10,9 @@
 class RBFNetwork
 {
 	typedef std::vector<double> Point;
-
+	bool bias;
 public:
-	RBFNetwork(std::string dataFile, int numberOfNeurons = 5) : linearNeuron(numberOfNeurons)
+	RBFNetwork(std::string dataFile, int numberOfNeurons = 5, bool bias = true) : linearNeuron(numberOfNeurons + (int)bias), bias(bias)
 	{
 		std::ifstream file(dataFile);
 		assert(file.is_open());
@@ -28,8 +28,45 @@ public:
 	}
 	~RBFNetwork();
 
+	std::string feedData(std::string dataPath) {
+		std::vector<Point> data;
+		std::ifstream file(dataPath);
+		assert(file.is_open());
+
+		while (!file.eof()) {
+			data.push_back(Point(2));
+			file >> data.back()[0];
+			file >> data.back()[1];
+		}
+		file.close();
+
+		std::ostringstream str;
+
+		using std::for_each;
+		using std::transform;
+
+		for_each(data.cbegin(), data.cend(),
+			[&](const Point& dataPoint)
+		{
+			//Feeding Data
+			for (RadialNeuron& neuron : radialLayer) {
+				neuron.feedData({ dataPoint[0] });
+			}
+
+			{
+				std::vector<double> radialOutput(radialLayer.size());
+				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
+				if (bias) radialOutput.push_back(1);
+				linearNeuron.feedData(radialOutput);
+			}
+
+			str << dataPoint[0] << '\t' << linearNeuron.getOutput() << '\n';
+		});
+
+		return str.str();
+	}
+
 	std::string feedData() {
-		std::vector<Point> result;
 		std::ostringstream str;
 
 		using std::for_each;
@@ -46,6 +83,7 @@ public:
 			{
 				std::vector<double> radialOutput(radialLayer.size());
 				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
+				if (bias) radialOutput.push_back(1);
 				linearNeuron.feedData(radialOutput);
 			}
 
@@ -71,6 +109,7 @@ public:
 			{
 				std::vector<double> radialOutput(radialLayer.size());
 				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
+				if (bias) radialOutput.push_back(1);
 				linearNeuron.feedData(radialOutput);
 			}
 
@@ -83,9 +122,9 @@ public:
 
 			//Update weights
 			for (RadialNeuron& neuron : radialLayer) {
-				neuron.updateWeights(learningFactor);
+				//neuron.updateWeights(learningFactor, momentum);
 			}
-			linearNeuron.updateWeights(learningFactor);
+			linearNeuron.updateWeights(learningFactor, momentum);
 		});
 	}
 	
@@ -93,11 +132,15 @@ public:
 private:
 	void initialize(int radialNeurons) {
 		radialLayer.reserve(radialNeurons);
-		std::default_random_engine generator;
+		/*std::default_random_engine generator;
 		std::uniform_int_distribution<int> distribution(0, data_.size()-1);
 
 		for (int i = 0; i < radialNeurons; i++) {
-			radialLayer.push_back(RadialNeuron(distribution(generator)));
+			radialLayer.push_back(RadialNeuron(data_[distribution(generator)][0]));
+		}*/
+		for (int i = 0; i < radialNeurons; i++) {
+			int j = ((double)i / radialNeurons)*data_.size();
+			radialLayer.push_back(RadialNeuron(data_[j][0]));
 		}
 	}
 
@@ -105,5 +148,6 @@ private:
 	LinearNeuron linearNeuron;
 
 	std::vector<Point> data_;
-	double learningFactor = 0.5;
+	double learningFactor = 0.2;
+	double momentum = 0.05;
 };

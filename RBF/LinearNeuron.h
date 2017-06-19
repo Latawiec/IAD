@@ -3,6 +3,8 @@
 #include <numeric>
 #include <algorithm>
 #include <assert.h>
+#include <iostream>
+#include <random>
 
 class LinearNeuron : public RBFNeuronTemplate
 {
@@ -10,12 +12,13 @@ private:
 	std::vector<double> inputWeights_;
 
 public:
-	LinearNeuron(int inputs)
-		: RBFNeuronTemplate(
-			[&](double value) { return value; },
-			[&](double value) { return 1; })
+	LinearNeuron(int inputs) : RBFNeuronTemplate()
 	{
-		inputWeights_ = std::vector<double>(inputs, 0.5);
+		std::default_random_engine generator;
+		std::uniform_int_distribution<int> distribution(0, 10);
+
+		inputWeights_ = std::vector<double>(inputs, distribution(generator)/10.0f);
+		previousValues = std::vector<double>(inputs, 0);
 	}
 
 	~LinearNeuron();
@@ -39,21 +42,35 @@ public:
 			data.cbegin(),
 			data.cend(), 
 			0.0, 
-			[&, i = 0](double one, double two)mutable -> double { return inputWeights_[i++] * (one + two); }
+			[&, i = 0](double one, double two)mutable -> double { return (one + inputWeights_[i++] * two); }
 		);
 		output_ = function(lastExcitementValue_);
 	}
 	
 	void backPropagation(std::vector<double> errors)override
 	{
-		using std::accumulate;
-		error_ = derivative(lastExcitementValue_)*accumulate(errors.cbegin(), errors.cend(), 0.0, [](double one, double two) { return one + two; });
+		error_ = errors[0];
 	}
 
-	void updateWeights(double learningFactor)override
+	void updateWeights(double learningFactor, double momentum)override
 	{
 		using std::for_each;
-		for_each(inputWeights_.begin(), inputWeights_.end(), [&, i = 0](double& value)mutable { value += learningFactor*error_*lastInputValues_[i++]; });
+		for_each(inputWeights_.begin(), inputWeights_.end(), [this, &learningFactor, &momentum, i = 0](double& value)mutable { 
+			value += momentum*previousValues[i];
+			value += learningFactor*error_*lastInputValues_[i++]/* + momentum*previousValues[i++]*/; });
+		for (int i = 0; i < inputWeights_.size(); i++) {
+			previousValues[i] = learningFactor*error_*lastInputValues_[i];
+		}
+	}
+
+	double function(double value)override
+	{
+		return value;
+	}
+
+	double derivative(double value)override
+	{
+		return 1;
 	}
 };
 
