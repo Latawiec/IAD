@@ -75,7 +75,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Latawiec\Documents\Visual Studio 2017\Projects\IAD\Kmeans;C:\Users\Latawiec\Documents\Visual Studio 2017\Projects\IAD\BasicTypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -111,6 +115,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Kmeans\Kmeans.cpp" />
+    <ClCompile Include="..\Kmeans\Kmeans_Group.cpp" />
     <ClCompile Include="LinearNeuron.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="RadialNeuron.cpp" />
@@ -122,6 +128,14 @@
     <ClInclude Include="RadialNeuron.h" />
     <ClInclude Include="RBFNetwork.h" />
     <ClInclude Include="RBFNeuronTemplate.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BasicTypes\BasicTypes.vcxproj">
+      <Project>{5c75387b-36d4-40d3-816a-325c5f021f38}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Kmeans\Kmeans.vcxproj">
+      <Project>{8f9da63a-3807-45ac-a460-8a1b40988ac8}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

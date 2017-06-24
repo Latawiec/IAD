@@ -4,7 +4,7 @@
 void main()
 {
 	RBFNetwork network("C://Users//Latawiec//Desktop//dupa.txt", 12, true);
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 1200; i++)
 		network.teach();
 	std::cout << "Hello RBF!" << std::endl;
 	

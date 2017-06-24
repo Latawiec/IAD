@@ -1,21 +1,33 @@
 #include "Kmeans.h"
 
-Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath)
+Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath, int dim)
 	: numberOfCentroids(centroidsNumber)
 {
 	std::ifstream file(dataPath);
 	assert(file.is_open());
 
 	while (!file.eof()) {
-		points_.push_back(Point(2));
-		file >> points_.back()[0];
-		file >> points_.back()[1];
+		points_.push_back(Point(dim));
+		for (int i = 0; i < dim; i++)
+			file >> points_.back()[i];
 	}
 	file.close();
+	initialize(init_type, centroidsNumber);
+}
 
+Kmeans::Kmeans(Init init_type, int centroidsNumber, const std::vector<Point>& data, int dim)
+	: numberOfCentroids(centroidsNumber) {
+	using std::for_each;
+	points_ = data;
+	const int dimDifference = data[0].size() - dim;
+	for_each(points_.begin(), points_.end(), [&dimDifference](Point& p) { for (int i = 0; i < dimDifference; i++) { p.pop_back(); } });
+	initialize(init_type, centroidsNumber);
+}
+
+void Kmeans::initialize(Init init_type, int centroidsNumber) {
 	numberOfPoints = points_.size();
 	std::random_device generator;
-	std::uniform_int_distribution<int> distribution(0, numberOfPoints-1);
+	std::uniform_int_distribution<int> distribution(0, numberOfPoints - 1);
 
 	switch (init_type) {
 	case Init::Forgy:
@@ -31,7 +43,7 @@ Kmeans::Kmeans(Init init_type, int centroidsNumber, std::string dataPath)
 		int chosenGroup = 0;
 		Point* temp = nullptr;
 
-		for (const auto& point : points_){
+		for (const auto& point : points_) {
 			chosenGroup = groupsDistribution(generator);
 			temp = &std::get<0>(groups[chosenGroup]);
 			(*temp)[0] += point[0];

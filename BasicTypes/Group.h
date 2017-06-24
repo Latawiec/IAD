@@ -14,8 +14,8 @@ public:
 	Group(Neuron<T>&& parent) : parent_(std::move(parent)) {}
 	virtual ~Group() {}
 
-	constexpr const Neuron<T>& getParent()const { return parent_ }
-	constexpr const std::vector<Point>& getGroup()const { return points_ }
+	constexpr const Neuron<T>& getParent()const { return parent_; }
+	constexpr const std::vector<Point>& getGroup()const { return points_; }
 	const Point& getParentPosition()const { return parent_.getWeights(); }
 	void add(const Point* point) { points_.push_back(point); }
 	void clearPoints() { points_.clear(); }

@@ -4,6 +4,7 @@
 #include "LinearNeuron.h"
 #include <string>
 #include <fstream>
+#include "Kmeans.h"
 #include <random>
 #include <sstream>
 
@@ -130,24 +131,12 @@ public:
 	
 
 private:
-	void initialize(int radialNeurons) {
-		radialLayer.reserve(radialNeurons);
-		/*std::default_random_engine generator;
-		std::uniform_int_distribution<int> distribution(0, data_.size()-1);
-
-		for (int i = 0; i < radialNeurons; i++) {
-			radialLayer.push_back(RadialNeuron(data_[distribution(generator)][0]));
-		}*/
-		for (int i = 0; i < radialNeurons; i++) {
-			int j = ((double)i / radialNeurons)*data_.size();
-			radialLayer.push_back(RadialNeuron(data_[j][0]));
-		}
-	}
+	void initialize(int radialNeurons);
 
 	std::vector<RadialNeuron> radialLayer;
 	LinearNeuron linearNeuron;
 
 	std::vector<Point> data_;
-	double learningFactor = 0.2;
+	double learningFactor = 0.4;
 	double momentum = 0.05;
 };
