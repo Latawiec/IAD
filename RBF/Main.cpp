@@ -3,7 +3,7 @@
 
 void main()
 {
-	RBFNetwork network("C://Users//Latawiec//Desktop//dupa.txt", 12, true);
+	RBFNetwork network("C://Users//Latawiec//Desktop//dupa.txt", 3, 1, 1);
 	for (int i = 0; i < 1200; i++)
 		network.teach();
 	std::cout << "Hello RBF!" << std::endl;

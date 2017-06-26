@@ -13,19 +13,18 @@ class RBFNetwork
 	typedef std::vector<double> Point;
 	bool bias;
 public:
-	RBFNetwork(std::string dataFile, int numberOfNeurons = 5, bool bias = true) : linearNeuron(numberOfNeurons + (int)bias), bias(bias)
+	RBFNetwork(std::string dataFile, int radialNeurons, int inputs, int outputs, bool bias = true) : bias(bias), inputDim(inputs), outputDim(outputs)
 	{
 		std::ifstream file(dataFile);
 		assert(file.is_open());
 
 		while (!file.eof()) {
-			data_.push_back(Point(2));
-			file >> data_.back()[0];
-			file >> data_.back()[1];
+			data_.push_back(Point(inputs+outputs));
+			for_each(data_.back().begin(), data_.back().end(), [&file](double& value) { file >> value; });
 		}
 		file.close();
 
-		initialize(numberOfNeurons);
+		initialize(radialNeurons);
 	}
 	~RBFNetwork();
 
@@ -35,9 +34,8 @@ public:
 		assert(file.is_open());
 
 		while (!file.eof()) {
-			data.push_back(Point(2));
-			file >> data.back()[0];
-			file >> data.back()[1];
+			data.push_back(Point(inputDim + outputDim));
+			for_each(data.back().begin(), data.back().end(), [&file](double& value) { file >> value; });
 		}
 		file.close();
 
@@ -51,17 +49,19 @@ public:
 		{
 			//Feeding Data
 			for (RadialNeuron& neuron : radialLayer) {
-				neuron.feedData({ dataPoint[0] });
+				neuron.feedData(std::vector<double>(&dataPoint[0], &dataPoint[inputDim]));
 			}
 
 			{
 				std::vector<double> radialOutput(radialLayer.size());
 				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
 				if (bias) radialOutput.push_back(1);
-				linearNeuron.feedData(radialOutput);
+				for_each(linearLayer.begin(), linearLayer.end(), [&radialOutput](LinearNeuron& neuron) { neuron.feedData(radialOutput); });
 			}
 
-			str << dataPoint[0] << '\t' << linearNeuron.getOutput() << '\n';
+			for (int i = 0; i < inputDim; i++) { str << dataPoint[i] << '\t'; }
+			for (int i = 0; i < outputDim; i++) { str << linearLayer[i].getOutput() << '\t'; }
+			str << '\n';
 		});
 
 		return str.str();
@@ -78,17 +78,19 @@ public:
 		{
 			//Feeding Data
 			for (RadialNeuron& neuron : radialLayer) {
-				neuron.feedData({ dataPoint[0] });
+				neuron.feedData(std::vector<double>(&dataPoint[0], &dataPoint[inputDim]));
 			}
 
 			{
 				std::vector<double> radialOutput(radialLayer.size());
 				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
 				if (bias) radialOutput.push_back(1);
-				linearNeuron.feedData(radialOutput);
+				for_each(linearLayer.begin(), linearLayer.end(), [&radialOutput](LinearNeuron& neuron) { neuron.feedData(radialOutput); });
 			}
 
-			str << dataPoint[0] << '\t' << linearNeuron.getOutput() << '\n';
+			for (int i = 0; i < inputDim; i++) { str << dataPoint[i] << '\t'; }
+			for (int i = 0; i < outputDim; i++) { str << linearLayer[i].getOutput() << '\t'; }
+			str << '\n';
 		});
 
 		return str.str();
@@ -104,28 +106,21 @@ public:
 		{
 			//Feeding Data
 			for (RadialNeuron& neuron : radialLayer) {
-				neuron.feedData({dataPoint[0]});
+				neuron.feedData(std::vector<double>(&dataPoint[0], &dataPoint[inputDim]));
 			}
 
 			{
 				std::vector<double> radialOutput(radialLayer.size());
 				transform(radialLayer.cbegin(), radialLayer.cend(), radialOutput.begin(), [](const RadialNeuron& neuron)->double { return neuron.getOutput(); });
 				if (bias) radialOutput.push_back(1);
-				linearNeuron.feedData(radialOutput);
+				for_each(linearLayer.begin(), linearLayer.end(), [&radialOutput](LinearNeuron& neuron) { neuron.feedData(radialOutput); });
 			}
 
 			//Propagating error
-			{
-				linearNeuron.backPropagation({ dataPoint[1] - linearNeuron.getOutput() });
-				std::vector<double> weightedErrors = linearNeuron.getWeightedError();
-				for_each(radialLayer.begin(), radialLayer.end(), [&, i = 0](RadialNeuron& neuron)mutable{ neuron.backPropagation({ weightedErrors[i++] }); });
-			}
+			for_each(linearLayer.begin(), linearLayer.end(), [&, i = 0](LinearNeuron& neuron)mutable { neuron.backPropagation({ dataPoint[inputDim + i++] - neuron.getOutput() }); });
 
 			//Update weights
-			for (RadialNeuron& neuron : radialLayer) {
-				//neuron.updateWeights(learningFactor, momentum);
-			}
-			linearNeuron.updateWeights(learningFactor, momentum);
+			for_each(linearLayer.begin(), linearLayer.end(), [&](LinearNeuron& neuron) { neuron.updateWeights(learningFactor, momentum); });
 		});
 	}
 	
@@ -134,7 +129,10 @@ private:
 	void initialize(int radialNeurons);
 
 	std::vector<RadialNeuron> radialLayer;
-	LinearNeuron linearNeuron;
+	std::vector<LinearNeuron> linearLayer;
+
+	const int inputDim;
+	const int outputDim;
 
 	std::vector<Point> data_;
 	double learningFactor = 0.4;

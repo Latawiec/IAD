@@ -15,9 +15,10 @@ public:
 	LinearNeuron(int inputs) : RBFNeuronTemplate()
 	{
 		std::default_random_engine generator;
-		std::uniform_int_distribution<int> distribution(0, 10);
+		std::uniform_real_distribution<double> distribution(0, 1);
 
-		inputWeights_ = std::vector<double>(inputs, distribution(generator)/10.0f);
+		inputWeights_ = std::vector<double>(inputs);
+		transform(inputWeights_.begin(), inputWeights_.end(), inputWeights_.begin(), [&](const double& a)->double { return distribution(generator); });
 		previousValues = std::vector<double>(inputs, 0);
 	}
 
@@ -42,7 +43,7 @@ public:
 			data.cbegin(),
 			data.cend(), 
 			0.0, 
-			[&, i = 0](double one, double two)mutable -> double { return (one + inputWeights_[i++] * two); }
+			[&, i = 0](const double& one, const double& two)mutable -> double { return (one + inputWeights_[i++] * two); }
 		);
 		output_ = function(lastExcitementValue_);
 	}
